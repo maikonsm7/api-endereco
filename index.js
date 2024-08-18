@@ -1,20 +1,29 @@
 const express = require('express')
+const axios = require('axios')
 const port = 3000
 
 const app = express()
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
 
+// app.get('/:cep', async(req, res)=>{
+//     const cep = req.params.cep
+//     try {
+//         const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+//         res.json(response.data)
+//     } catch (error) {
+//         console.log(error)
+//     }
+// })
 app.get('/:cep', (req, res)=>{
     const cep = req.params.cep
-    (async ()=>{
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        const data = res.json()
-        res.status(200).json({data})
-    })()
+
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => response.json())
+        .then(data => res.json(data))
+        .catch(err => res.status(500).json({ error: err }))   
 })
 
 app.listen(port, ()=>{
-    console.log(`Servidor online na porta ${port}`)
+    console.log(`Servidor online. http://localhost:${port}`)
 })
